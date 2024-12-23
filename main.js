@@ -1,9 +1,11 @@
 let lamp = document.getElementById("lavalamp");
 let lampContainer = document.getElementById("lamp-container");
 
+const vineBoom = new Audio('vine_boom.mp3');
+vineBoom.load();
+
 lamp.addEventListener("click", function() {
     // Play vine boom sound
-    const vineBoom = new Audio('vine_boom.mp3');
     vineBoom.play();
 
     // Create explosion element
