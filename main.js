@@ -44,62 +44,52 @@ lamp.addEventListener("click", function() {
 });
 
 // Track current and target colors for smooth transitions
-let currentValues = [0, 0, 0, 0, 0, 0];
-let targetValues = [0, 0, 0, 0, 0, 0];
-
-let solver = null;
+let currentColor = [0, 0, 0];
+let targetColor = [0, 0, 0];
 
 // Linear interpolation between two values
 function lerp(start, end, t) {
     return start + (end - start) * t;
 }
 
-// Smoothly interpolate between colors
 function updateLampColor() {
-    
     // Lerp current color towards target
     const t = 0.01; // Adjust this value to control transition speed
-    currentValues[0] = lerp(currentValues[0], targetValues[0], t);
-    currentValues[1] = lerp(currentValues[1], targetValues[1], t); 
-    currentValues[2] = lerp(currentValues[2], targetValues[2], t);
-    currentValues[3] = lerp(currentValues[3], targetValues[3], t);
-    currentValues[4] = lerp(currentValues[4], targetValues[4], t);
-    currentValues[5] = lerp(currentValues[5], targetValues[5], t);
+    currentColor[0] = lerp(currentColor[0], targetColor[0], t);
+    currentColor[1] = lerp(currentColor[1], targetColor[1], t); 
+    currentColor[2] = lerp(currentColor[2], targetColor[2], t);
 
-    if (solver) {
-        const css = solver.css(currentValues);
-        lamp.style = css;
+    const hueShift = Math.round(calculateHueShift(...currentColor));
+    lamp.style = `filter: sepia(100%) saturate(200%) hue-rotate(${hueShift}deg)`;
+}
+
+
+let isRunningOnVedalsPC = true;
+// Fetch new target color
+function fetchTargetColor() {
+    if (isRunningOnVedalsPC){
+        fetch("http://localhost:8000/lamp")
+            .then(response => response.text())
+            .then(hexColor => {
+                hexColor = hexColor.toLowerCase().trim();
+                targetColor = hexToRgb(hexColor);
+            })
+            .catch(error => {
+                isRunningOnVedalsPC = false;
+                console.error("Failed to fetch lamp color:", error);
+            });
+    }
+    else {
+        targetColor = generateRandomSaturatedColor();
     }
 }
 
-// Fetch new target color
-function fetchTargetColor() {
-    fetch("http://localhost:8000/lamp")
-        .then(response => response.text())
-        .then(hexColor => {
-            hexColor = hexColor.toLowerCase().trim();
-            const rgb = hexToRgb(hexColor);
-            
-            const color = new Color(
-                Math.round(rgb[0]), 
-                Math.round(rgb[1]), 
-                Math.round(rgb[2])
-            );
-            solver = new Solver(color);
-            const result = solver.solve();
-            targetValues = result.values;
-        })
-        .catch(error => {
-            console.error("Failed to fetch lamp color:", error);
-        });
-}
-
 // Update interpolation frequently for smooth animation
-//setInterval(updateLampColor, 16); // ~60fps
+setInterval(updateLampColor, 16); // ~60fps
 
 // Fetch new target color less frequently
-//fetchTargetColor(); // Initial fetch
-//setInterval(fetchTargetColor, 500);
+fetchTargetColor(); // Initial fetch
+setInterval(fetchTargetColor, 3000);
 
 // Create raining cats
 function createCat() {
