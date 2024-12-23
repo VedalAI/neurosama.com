@@ -73,26 +73,26 @@ function updateLampColor() {
 }
 
 // Fetch new target color
-function fetchTargetColor() {
-    fetch("http://localhost:8000/lamp")
-        .then(response => response.text())
-        .then(hexColor => {
-            hexColor = hexColor.toLowerCase().trim();
-            const rgb = hexToRgb(hexColor);
+// function fetchTargetColor() {
+//     fetch("http://localhost:8000/lamp")
+//         .then(response => response.text())
+//         .then(hexColor => {
+//             hexColor = hexColor.toLowerCase().trim();
+//             const rgb = hexToRgb(hexColor);
             
-            const color = new Color(
-                Math.round(rgb[0]), 
-                Math.round(rgb[1]), 
-                Math.round(rgb[2])
-            );
-            solver = new Solver(color);
-            const result = solver.solve();
-            targetValues = result.values;
-        })
-        .catch(error => {
-            console.error("Failed to fetch lamp color:", error);
-        });
-}
+//             const color = new Color(
+//                 Math.round(rgb[0]), 
+//                 Math.round(rgb[1]), 
+//                 Math.round(rgb[2])
+//             );
+//             solver = new Solver(color);
+//             const result = solver.solve();
+//             targetValues = result.values;
+//         })
+//         .catch(error => {
+//             console.error("Failed to fetch lamp color:", error);
+//         });
+// }
 
 // Update interpolation frequently for smooth animation
 //setInterval(updateLampColor, 16); // ~60fps
