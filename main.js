@@ -113,28 +113,19 @@ function createCat() {
     cat.style.top = '-50px';
 
     document.body.appendChild(cat);
-
+    
     // Animate falling
-    let posY = -50;
     let rotation = Math.random() * 360;
     let speedY = 1 + Math.random() * 2;
     let speedRotation = -2 + Math.random() * 4;
-
-    function animate() {
-        posY += speedY;
-        rotation += speedRotation;
-        cat.style.top = posY + 'px';
-        cat.style.transform = `rotate(${rotation}deg)`;
-
-        // Remove when off screen
-        if (posY > window.innerHeight) {
-            cat.remove();
-        } else {
-            requestAnimationFrame(animate);
-        }
-    }
-
-    animate();
+    let distance = window.innerHeight;
+    
+    cat.animate([
+        { top: '-50px', rotate: `${rotation}deg` },
+        { top: `${distance}px`, rotate: `${rotation * speedRotation * 4}deg` },
+    ], {
+        duration: (distance / speedY * 8)
+    }).finished.then(() => cat.remove());
 }
 
 // Create new cats periodically
