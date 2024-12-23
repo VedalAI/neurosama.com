@@ -95,7 +95,7 @@ function fetchTargetColor() {
 }
 
 // Update interpolation frequently for smooth animation
-setInterval(updateLampColor, 16); // ~60fps
+//setInterval(updateLampColor, 16); // ~60fps
 
 // Fetch new target color less frequently
 //fetchTargetColor(); // Initial fetch
