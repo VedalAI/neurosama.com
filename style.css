@@ -43,6 +43,19 @@ body {
     cursor: pointer;
 }
 
+#lamp-container {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
 h1 {
     color: #D63866;
     text-shadow: 0 0 10px #F9E3CB,
