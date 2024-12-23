@@ -95,11 +95,23 @@ function updateLampColor() {
 // }
 
 // Update interpolation frequently for smooth animation
-//setInterval(updateLampColor, 16); // ~60fps
+setInterval(updateLampColor, 16); // ~60fps
 
 // Fetch new target color less frequently
 //fetchTargetColor(); // Initial fetch
 //setInterval(fetchTargetColor, 500);
+setInterval(() => {
+    const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+    const rgb = hexToRgb(randomColor);
+    const color = new Color(
+        Math.round(rgb[0]),
+        Math.round(rgb[1]),
+        Math.round(rgb[2])
+    );
+    solver = new Solver(color);
+    const result = solver.solve();
+    targetValues = result.values;
+}, 500);
 
 // Create raining cats
 function createCat() {
