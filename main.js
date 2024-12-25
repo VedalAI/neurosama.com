@@ -43,59 +43,24 @@ lamp.addEventListener("click", function() {
     }, 300); // Show explosion for 1 second
 });
 
-// Track current and target colors for smooth transitions
-let currentHue = 0;
-let targetHue = 0;
-
-// assumes start is always in [0, wrappingPoint]
-function circularLerp(start, end, t, wrappingPoint) {
-    let delta = end - start;
-    if (delta > wrappingPoint / 2){
-        delta = delta - wrappingPoint;
-    }
-    else if (delta < -wrappingPoint / 2){
-        delta = delta + wrappingPoint;
-    }
-
-    let result = (start + delta * t) % wrappingPoint;
-    if (result < 0)
-        result = wrappingPoint - result;
-
-    return result
-}
-
-function updateLampColor() {
-    // Lerp current color towards target
-    const t = 0.03; // Adjust this value to control transition speed
-    currentHue = circularLerp(currentHue, targetHue, t, 360);
-
-    lamp.style = `filter: sepia(100%) saturate(200%) hue-rotate(${currentHue}deg)`;
-}
-
-
 let isRunningOnVedalsPC = true;
 // Fetch new target color
 function fetchTargetColor() {
     if (isRunningOnVedalsPC) {
         fetch("http://localhost:8000/lamp")
             .then(response => response.text())
-            .then(response => response.trim())
-            .then(hexColor => {
-                targetHue = calculateHueShift(hexToRgb(hexColor));
+            .then(response => {
+                lampContainer.style.backgroundColor = response.trim();
             })
             .catch(error => {
                 isRunningOnVedalsPC = false;
-                targetHue = Math.random() * 360;
                 console.error("Failed to fetch lamp color:", error);
             });
     }
     else {
-        targetHue = Math.random() * 360;
+        lampContainer.style.backgroundColor = `hsl(${Math.random()*360}deg 60% 50%)`;
     }
 }
-
-// Update interpolation frequently for smooth animation
-setInterval(updateLampColor, 16); // ~60fps
 
 // Fetch new target color less frequently
 fetchTargetColor(); // Initial fetch

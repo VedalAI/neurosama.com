@@ -41,10 +41,27 @@ body {
 
 #lavalamp {
     cursor: pointer;
+    visibility: hidden;
 }
 
 #lamp-container {
     animation: pulse 2s ease-in-out infinite;
+
+    background-color: purple;
+    transition: background-color 1.5s;
+
+    background-image: url(lavalamp.png);
+    /* needed to avoid weird anti-aliasing issues */
+    background-size: calc(100% + 1px) 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    background-blend-mode: luminosity;
+
+    mask-image: url(lavalamp.png);
+    mask-size: 100%;
+    mask-repeat: no-repeat;
+    mask-position: center;
 }
 
 @keyframes pulse {
