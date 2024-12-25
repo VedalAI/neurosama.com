@@ -10,7 +10,7 @@ lamp.addEventListener("click", function() {
     const explosion = document.createElement("div");
     explosion.style.position = "fixed";
     explosion.style.top = "0";
-    explosion.style.left = "0"; 
+    explosion.style.left = "0";
     explosion.style.width = "100vw";
     explosion.style.height = "100vh";
     explosion.style.background = "radial-gradient(circle at center, #ff4500, #ff8c00, #ff0000)";
@@ -23,7 +23,7 @@ lamp.addEventListener("click", function() {
     lampContainer.style.transition = "all 0.2s";
     lampContainer.style.transform = "scale(1.5)";
     lampContainer.style.opacity = "0";
-    
+
     // Fade in explosion
     requestAnimationFrame(() => {
         explosion.style.opacity = "1";
@@ -44,43 +44,53 @@ lamp.addEventListener("click", function() {
 });
 
 // Track current and target colors for smooth transitions
-let currentColor = [0, 0, 0];
-let targetColor = [0, 0, 0];
+let currentHue = 0;
+let targetHue = 0;
 
-// Linear interpolation between two values
-function lerp(start, end, t) {
-    return start + (end - start) * t;
+// assumes start is always in [0, wrappingPoint]
+function circularLerp(start, end, t, wrappingPoint) {
+    let delta = end - start;
+    if (delta > wrappingPoint / 2){
+        delta = delta - wrappingPoint;
+    }
+    else if (delta < -wrappingPoint / 2){
+        delta = delta + wrappingPoint;
+    }
+
+    let result = (start + delta * t) % wrappingPoint;
+    if (result < 0)
+        result = wrappingPoint - result;
+
+    return result
 }
 
 function updateLampColor() {
     // Lerp current color towards target
-    const t = 0.01; // Adjust this value to control transition speed
-    currentColor[0] = lerp(currentColor[0], targetColor[0], t);
-    currentColor[1] = lerp(currentColor[1], targetColor[1], t); 
-    currentColor[2] = lerp(currentColor[2], targetColor[2], t);
+    const t = 0.03; // Adjust this value to control transition speed
+    currentHue = circularLerp(currentHue, targetHue, t, 360);
 
-    const hueShift = Math.round(calculateHueShift(...currentColor));
-    lamp.style = `filter: sepia(100%) saturate(200%) hue-rotate(${hueShift}deg)`;
+    lamp.style = `filter: sepia(100%) saturate(200%) hue-rotate(${currentHue}deg)`;
 }
 
 
 let isRunningOnVedalsPC = true;
 // Fetch new target color
 function fetchTargetColor() {
-    if (isRunningOnVedalsPC){
+    if (isRunningOnVedalsPC) {
         fetch("http://localhost:8000/lamp")
             .then(response => response.text())
+            .then(response => response.trim())
             .then(hexColor => {
-                hexColor = hexColor.toLowerCase().trim();
-                targetColor = hexToRgb(hexColor);
+                targetHue = calculateHueShift(hexToRgb(hexColor));
             })
             .catch(error => {
                 isRunningOnVedalsPC = false;
+                targetHue = Math.random() * 360;
                 console.error("Failed to fetch lamp color:", error);
             });
     }
     else {
-        targetColor = generateRandomSaturatedColor();
+        targetHue = Math.random() * 360;
     }
 }
 

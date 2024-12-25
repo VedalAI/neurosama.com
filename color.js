@@ -31,44 +31,30 @@ function generateRandomSaturatedColor() {
 }
 
 
-function calculateHueShift(r, g, b) {
-    // Helper function to convert RGB to HSL
-    function rgbToHsl(r, g, b) {
-        r /= 255;
-        g /= 255;
-        b /= 255;
+function calculateHueShift([r, g, b]) {
+    function rgbToHue(r, g, b) {
+        r /= 255.0;
+        g /= 255.0;
+        b /= 255.0;
 
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        let h, s, l;
-
-        l = (max + min) / 2;
-
-        if (max === min) {
-            h = s = 0; // Achromatic (grey)
-        } else {
-            const d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-            switch (max) {
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
-            }
-
-            h /= 6;
+        const cMax  = Math.max(r,g,b);
+        const cMin  = Math.min(r,g,b);
+        const delta = cMax - cMin;
+    
+        if (!delta) return 0;
+        
+        let hue;
+        switch (cMax) {
+            case r: hue = (g - b) / delta + (g < b ? 6 : 0); break;
+            case g: hue = (b - r) / delta + 2; break;
+            case b: hue = (r - g) / delta + 4; break;
         }
-
-        return [h * 360, s, l];
+        return hue * 60;
     }
 
-    // Convert yellow (RGB 255, 255, 0) to HSL
-    const yellowHsl = rgbToHsl(255, 255, 0);
-    const yellowHue = yellowHsl[0];
-
-    // Convert target color to HSL
-    const targetHsl = rgbToHsl(r, g, b);
-    const targetHue = targetHsl[0];
+    // Convert yellow RGB(255, 255, 0) and target color to hue
+    const yellowHue = rgbToHue(255, 255, 0);
+    const targetHue = rgbToHue(r, g, b);
 
     // Calculate hue shift
     let hueShift = targetHue - yellowHue;
