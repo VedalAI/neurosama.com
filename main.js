@@ -73,33 +73,45 @@ function updateLampColor() {
 }
 
 // Fetch new target color
-function fetchTargetColor() {
-    fetch("http://localhost:8000/lamp")
-        .then(response => response.text())
-        .then(hexColor => {
-            hexColor = hexColor.toLowerCase().trim();
-            const rgb = hexToRgb(hexColor);
+// function fetchTargetColor() {
+//     fetch("http://localhost:8000/lamp")
+//         .then(response => response.text())
+//         .then(hexColor => {
+//             hexColor = hexColor.toLowerCase().trim();
+//             const rgb = hexToRgb(hexColor);
             
-            const color = new Color(
-                Math.round(rgb[0]), 
-                Math.round(rgb[1]), 
-                Math.round(rgb[2])
-            );
-            solver = new Solver(color);
-            const result = solver.solve();
-            targetValues = result.values;
-        })
-        .catch(error => {
-            console.error("Failed to fetch lamp color:", error);
-        });
-}
+//             const color = new Color(
+//                 Math.round(rgb[0]), 
+//                 Math.round(rgb[1]), 
+//                 Math.round(rgb[2])
+//             );
+//             solver = new Solver(color);
+//             const result = solver.solve();
+//             targetValues = result.values;
+//         })
+//         .catch(error => {
+//             console.error("Failed to fetch lamp color:", error);
+//         });
+// }
 
 // Update interpolation frequently for smooth animation
-//setInterval(updateLampColor, 16); // ~60fps
+setInterval(updateLampColor, 16); // ~60fps
 
 // Fetch new target color less frequently
 //fetchTargetColor(); // Initial fetch
 //setInterval(fetchTargetColor, 500);
+setInterval(() => {
+    const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+    const rgb = hexToRgb(randomColor);
+    const color = new Color(
+        Math.round(rgb[0]),
+        Math.round(rgb[1]),
+        Math.round(rgb[2])
+    );
+    solver = new Solver(color);
+    const result = solver.solve();
+    targetValues = result.values;
+}, 500);
 
 // Create raining cats
 function createCat() {
